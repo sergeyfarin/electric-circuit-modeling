@@ -15,7 +15,7 @@
   import Waveform from './lib/components/Waveform.svelte'
   import { clonePreset, presets } from './lib/circuit/presets'
   import { simulateCircuit } from './lib/circuit/solver'
-  import type { CircuitComponent, ComponentType, SimulationResult } from './lib/circuit/types'
+  import type { CircuitComponent, ComponentType, Position, SimulationResult } from './lib/circuit/types'
 
   let circuit = clonePreset('divider')
   let selectedId: string | null = circuit.components[0]?.id ?? null
@@ -87,20 +87,20 @@
     return `${prefix}${count}`
   }
 
-  function addComponent(type: ComponentType) {
+  function addComponent(type: ComponentType, position?: Position) {
     const nodeA = circuit.nodes.find((node) => node !== '0') ?? '0'
     const nodeB = '0'
     const id = nextId(type)
     let component: CircuitComponent
 
     if (type === 'resistor') {
-      component = { id, type, name: nextName('R'), nodeA, nodeB, resistance: 1_000 }
+      component = { id, type, name: nextName('R'), nodeA, nodeB, resistance: 1_000, position }
     } else if (type === 'capacitor') {
-      component = { id, type, name: nextName('C'), nodeA, nodeB, capacitance: 0.000001, initialVoltage: 0 }
+      component = { id, type, name: nextName('C'), nodeA, nodeB, capacitance: 0.000001, initialVoltage: 0, position }
     } else if (type === 'battery') {
-      component = { id, type, name: nextName('B'), positive: nodeA, negative: nodeB, voltage: 5, internalResistance: 1 }
+      component = { id, type, name: nextName('B'), positive: nodeA, negative: nodeB, voltage: 5, internalResistance: 1, position }
     } else if (type === 'voltmeter') {
-      component = { id, type, name: nextName('VM'), nodeA, nodeB, resistance: null }
+      component = { id, type, name: nextName('VM'), nodeA, nodeB, resistance: null, position }
       probeKey = `meter:${id}`
     } else {
       let nodes = circuit.nodes
@@ -118,12 +118,28 @@
         onResistance: 20,
         offResistance: 1_000_000_000,
         baseResistance: 100_000,
+        position,
       }
       circuit = { ...circuit, nodes }
     }
 
     circuit = { ...circuit, components: [...circuit.components, component] }
     selectedId = id
+  }
+
+  function moveComponent(id: string, position: Position) {
+    circuit = {
+      ...circuit,
+      components: circuit.components.map((item) =>
+        item.id === id ? { ...item, position } : item,
+      ),
+    }
+  }
+
+  function startPaletteDrag(event: DragEvent, type: ComponentType) {
+    if (!event.dataTransfer) return
+    event.dataTransfer.setData('application/x-circuit-component', type)
+    event.dataTransfer.effectAllowed = 'copy'
   }
 
   function removeComponent(id: string) {
@@ -199,32 +215,33 @@
       </div>
 
       <div class="palette-grid">
-        <button onclick={() => addComponent('resistor')}>
+        <button draggable={true} ondragstart={(event) => startPaletteDrag(event, 'resistor')} onclick={() => addComponent('resistor')}>
           <span class="component-glyph resistor-glyph">R</span>
           <span><strong>Resistor</strong><small>Linear load</small></span>
           <Plus size={16} />
         </button>
-        <button onclick={() => addComponent('capacitor')}>
+        <button draggable={true} ondragstart={(event) => startPaletteDrag(event, 'capacitor')} onclick={() => addComponent('capacitor')}>
           <span class="component-glyph capacitor-glyph">C</span>
           <span><strong>Capacitor</strong><small>Transient state</small></span>
           <Plus size={16} />
         </button>
-        <button onclick={() => addComponent('battery')}>
+        <button draggable={true} ondragstart={(event) => startPaletteDrag(event, 'battery')} onclick={() => addComponent('battery')}>
           <span class="component-glyph"><Battery size={18} /></span>
           <span><strong>Battery</strong><small>Real or ideal</small></span>
           <Plus size={16} />
         </button>
-        <button onclick={() => addComponent('voltmeter')}>
+        <button draggable={true} ondragstart={(event) => startPaletteDrag(event, 'voltmeter')} onclick={() => addComponent('voltmeter')}>
           <span class="component-glyph"><Gauge size={18} /></span>
           <span><strong>Voltmeter</strong><small>Optional loading</small></span>
           <Plus size={16} />
         </button>
-        <button onclick={() => addComponent('transistor')}>
+        <button draggable={true} ondragstart={(event) => startPaletteDrag(event, 'transistor')} onclick={() => addComponent('transistor')}>
           <span class="component-glyph"><Cpu size={18} /></span>
           <span><strong>NPN switch</strong><small>Threshold model</small></span>
           <Plus size={16} />
         </button>
       </div>
+      <p class="drag-hint">Drag a part onto the board, or click to add it automatically.</p>
 
       <div class="node-maker">
         <label for="new-node">Add a node</label>
@@ -271,7 +288,13 @@
           </div>
         </div>
         <div class="canvas-wrap">
-          <CircuitCanvas {circuit} {selectedId} onselect={(id) => (selectedId = id)} />
+          <CircuitCanvas
+            {circuit}
+            {selectedId}
+            onselect={(id) => (selectedId = id)}
+            onmove={moveComponent}
+            onadd={addComponent}
+          />
         </div>
       </div>
 

@@ -1,9 +1,15 @@
 export type ComponentType = 'resistor' | 'capacitor' | 'battery' | 'voltmeter' | 'transistor'
 
+export interface Position {
+  x: number
+  y: number
+}
+
 interface BaseComponent {
   id: string
   name: string
   type: ComponentType
+  position?: Position
 }
 
 export interface Resistor extends BaseComponent {

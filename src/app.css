@@ -70,6 +70,7 @@ input { width: 100%; padding: 8px 10px; }
 .palette-grid { display: grid; gap: 7px; }
 .palette-grid > button { width: 100%; display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 9px; padding: 9px; color: var(--text); text-align: left; background: #111a1e; border: 1px solid var(--line-soft); border-radius: 8px; transition: border-color .15s, background .15s; }
 .palette-grid > button:hover { border-color: #42555e; background: #152025; }
+.palette-grid > button:active { cursor: grabbing; }
 .palette-grid button > span:nth-child(2) { display: flex; flex-direction: column; min-width: 0; }
 .palette-grid strong { font-size: 13px; font-weight: 600; }
 .palette-grid small { margin-top: 2px; color: var(--muted); font-size: 10px; }
@@ -77,6 +78,7 @@ input { width: 100%; padding: 8px 10px; }
 .component-glyph { width: 34px; height: 34px; display: grid; place-items: center; color: var(--accent); font: 500 13px var(--font-mono); background: #15231f; border: 1px solid #29453b; border-radius: 7px; }
 .capacitor-glyph { color: var(--yellow); background: #292417; border-color: #4e4325; }
 .resistor-glyph { letter-spacing: .08em; }
+.drag-hint { margin: 9px 2px 0; color: var(--faint); font-size: 10px; line-height: 1.45; }
 .node-maker { margin: 18px 0; padding: 14px 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); }
 .node-maker label { display: block; margin-bottom: 8px; color: #aebbc0; font-size: 12px; font-weight: 650; }
 .node-maker > div { display: grid; grid-template-columns: 1fr 36px; gap: 6px; }

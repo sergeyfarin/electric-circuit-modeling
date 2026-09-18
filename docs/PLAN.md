@@ -7,7 +7,7 @@ Create an approachable browser workbench for students and hobbyists who want to 
 ## MVP scope
 
 1. Offer a blank board and three useful starters: a loaded voltage divider, an RC charging circuit, and an NPN transistor switch.
-2. Let users add resistors, capacitors, batteries, voltmeters, transistors, and named nodes.
+2. Let users drag resistors, capacitors, batteries, voltmeters, and transistors from a palette onto a pannable board, reposition them directly, and add named nodes.
 3. Let users connect each terminal by node name and edit electrical values.
 4. Solve the circuit locally, draw an auto-layout schematic, show the final probe value, and chart voltage over time.
 5. Model battery internal resistance and voltmeter input resistance, including ideal zero/infinite choices.
@@ -24,6 +24,6 @@ Rust/Wasm becomes worthwhile when profiling demonstrates a need—likely after a
 
 ## Delivery stages
 
-- **Concept:** one-page Svelte 5 workbench, TypeScript solver, SVG schematic and scope.
+- **Concept:** one-page Svelte 5 workbench, TypeScript solver, draggable/pannable SVG schematic, and scope.
 - **Reliability:** divider, meter loading, RC transient, transistor state, and safety-limit tests.
 - **Next:** wire drawing, undo/redo, import/export, SPICE-like nonlinear devices, AC analysis, and worker/Wasm benchmarking.
